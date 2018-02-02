@@ -2,11 +2,11 @@
 layout: post
 title:  "MAAS for the home"
 subtitle: "The unsupported configuration"
-date: 2018-02-01 20:00:00 +0000
+date: 2018-02-02 20:00:00 +0000
 gh-repo: chris-sanders/maas-lxd
 gh-badge: [star, fork, follow]
 image: "/img/maas-logo.svg"
-tags: [homelab, maas]
+tags: [homelab, maas, lxd]
 ---
 
 MAAS is designed to run in a data center where it expects to have control of DNS
@@ -30,23 +30,24 @@ If you already have a MAAS server you can skip directly to the
 I've chosen to install MAAS in a LXD container. While this requires a minimal
 amount of extra setup it allows me to migrate the LXD to another machine in the
 future and keeps MAAS separated from anything else on the machine. I have a
-small repository ([maas-lxd][maas-lxd]) with some scripts and profiles to help
-set it up. You can use the buttons at the top of this post to star or fork
-the repository to make it easier to find later. 
+repository ([maas-lxd][maas-lxd]) with some scripts and profiles to help set it
+up. You can use the buttons at the top of this post to star or fork the
+repository to make it easier to find later. 
 
 ### MAAS-LXD
 
 The README file from the [maas-lxd][maas-lxd] repository explains how to use it
 but is intended to setup a self contained environment where LXD is providing
-NAT (the LXD default). For the home lab I'm going to modify that to use a
-bridged setup since I want MAAS to receive PXE requests from the network.
+NAT (the LXD default). For the home lab we're going to modify that to use a
+bridged setup since we want MAAS to receive PXE requests from the network.
 
-You'll need to have LXD installed.
+You'll need to have LXD installed, here's how you can do that with snaps.
 ```bash
 $ sudo snap install lxd
 ```
 On my host machine ```br0``` is a bridge I already have configured in
-/etc/network/interfaces:
+```/etc/network/interface```. Be sure you have a brdige ready for use, here's my
+configuration as an example.
 ```
 auto enp4s0
 iface enp4s0 inet manual
@@ -58,21 +59,21 @@ iface br0 inet dhcp
   up ifconfig enp4s0 up
 
 ```
-You can reconfigure LXD to use this bridge and the containers will be bridged
-onto your network. Configure the LXD bridge to use ```br0``` instead of LXD's
-default ```lxdbr0```. You can do this via a configuration wizard.
+We want to reconfigure LXD to use this bridge so the containers will be bridged
+onto the network. To configure LXD to use ```br0``` instead of LXD's
+default ```lxdbr0```. Use the configuration wizard.
 ```bash
 $ sudo lxd init
 ```
 LXD configuration isn't the focus of this post, but if you want to learn more
 check it out on [github](https://github.com/lxc/lxd/blob/master/doc/index.md).
 
-If you haven't already, clone the maas-lxd repository:
+Clone the maas-lxd repository:
 ```bash
 $ git clone https://github.com/chris-sanders/maas-lxd.git
 $ cd maas-lxd
 ```
-Edit the ```maas-profile``` at the bottom modify the devices by removing the
+Edit the ```maas-profile```, at the bottom modify the devices by removing the
 eth1 device and setting eth0 to use ```br0```. 
 ```diff
 devices:
@@ -105,8 +106,9 @@ config:
     subnets:
       - type: dhcp
 ```
-I'm ready to create the container, run the make-maas.sh script with a
-single argument which is the name you want your container to have.
+We're ready to create the container, run the make-maas.sh script with a
+single argument which is the name you want your container to have. I'm using the
+container name ``maas-test`` for this setup.
 ```bash
 $ ./make-maas.sh maas-test
 Creating container maas-test
@@ -118,8 +120,8 @@ To install the backport: apt install -t xenial-backports lxc lxc-client
 MAAS will become available at: http://192.168.1.56/MAAS with user/password admin/admin
 ```
 I'm doing this on Xenial, if you're running a newer LXD you won't see the error
-about 'Stable branch' shown above. It won't affect anything I'm not using the
-dnsmasq setting in this setup.
+about 'Stable branch' shown above. It won't affect anything we aren't using the
+dnsmasq setting of LXD in this setup.
 
 You can see the new container with lxd's list command.
 ```bash
@@ -138,7 +140,7 @@ from inside the container.
 ```bash
 $ lxc exec maas-test -- tail -f /var/log/syslog
 ```
-Once it has completed the br0 interface will be added on the container.
+Once it has completed check that the ```br0``` interface was added on the container.
 
 ```bash
 $ lxc list
@@ -151,7 +153,7 @@ $ lxc list
 
 ```
 Having both interfaces dhcp will wreck havok on the containers networking, so
-I'll remove the dhcp from eth0 and let br0 manage it.
+remove the dhcp from ```eth0``` and let ```br0``` manage it.
 
 ```bash
 $ lxc exec maas-test -- vim /etc/network/interfaces.d/50-cloud-init.cfg
@@ -172,7 +174,7 @@ Reboot the container
 ```bash
 $ lxc restart maas-test
 ```
-Now the container should have a single br0 interface.
+Now the container should have a single ```br0``` interface.
 ```bash
 $ lxc list
 +---------------+---------+----------------------+------+------------+-----------+
@@ -182,14 +184,16 @@ $ lxc list
 +---------------+---------+----------------------+------+------------+-----------+
 
 ```
-At this point you can log in at the URL that the make-maas script provided.
+At this point you can log in at the URL that the make-maas script provided
+earlier.
 ```
 MAAS will become available at: http://192.168.1.56/MAAS with user/password admin/admin
 ```
-I recommend you provide a static IP address for your MAAS container. If the IP
-address changes you will have to update configurations in maas. There is a
-script in the scripts folder ```set_url.sh``` which will update the IP address
-if you need to.
+You should provide a static IP address for your MAAS container. If the IP
+address changes you will have to update configurations in maas and your
+router. There is a script in the scripts folder ```set_url.sh``` which will
+update the IP address in MAAS if you want to do that now and set it to something
+differnt from what it got on dhcp.
 
 ## Network Configuration
 
@@ -198,14 +202,14 @@ machine must PXE boot from MAAS. This means the router that is providing DHCP
 will need to forward PXE requests to MAAS. Many consumer routers today will
 allow this as an advanced setting.
 
-Something that wasn't obvious at first is that containers created on MAAS
-managed machines _do not_ DHCP. Instead they get a static IP assigned by MAAS.
-I will have to account for that when setting aside IP space, also those machines
-will not register with the routers DNS. MAAS deployed machines will show up in
-both DNS servers and MAAS deployed containers will only be in the MAAS DNS
-Server since they do not DHCP.
+Containers created on MAAS managed machines _do not_ DHCP. Instead they get a
+static IP assigned by MAAS. We will have to account for that when setting aside
+IP space, also those machines will not register with the routers DNS. MAAS
+deployed machines will show up in both DNS servers and MAAS deployed containers
+will only be in the MAAS DNS Server since they do not DHCP. Not a problem, just
+something to be aware of.
 
-For IP space I'll be using.
+For IP space I'm be using.
 
 | IP / Range  | Used For |
 | ----------  | -------- |
@@ -221,9 +225,8 @@ For IP space I'll be using.
 
 To setup PXE requests to be redirected to MAAS you have to first enable SSH
 access to the router. The setting is found in
-```Administration/System/Services/Enable SSH```. I recommend setting it to "LAN
-only". Once set you can ssh into your router with the user/pass you use to log
-into the web UI.
+```Administration/System/Services/Enable SSH```. Set it to "LAN only". Once set
+you can ssh into your router with the user/pass you use to log into the web UI.
 ```bash
 $ ssh admin@192.168.1.1
 ```
@@ -239,7 +242,7 @@ Now the router will provide DHCP and DNS but redirect PXE to MAAS.
 
 #### Subnetmask
 
-Since I'm using IP space outside of the standard 192.168.1.x range that home
+Since we're using IP space outside of the standard 192.168.1.x range that home
 routers frequently come configured with, the router needs to be configured to
 route the extra addresses in the 192.168.0.x range by adjusting the subnet
 mask from ```255.255.255.0``` to ```255.255.254.0```.  
@@ -287,8 +290,8 @@ Additionally, add your space to the Space field.
 ![subnet summary](/img/maas/subnet-settings.png)
 
 Finally scroll down to the Reserved section and add reservations via the
-"Reserve range" button. Here I've reserved the ranges which cover the DHCP and
-Static assignments from the table above.
+"Reserve range" button. Set reservations which cover the DHCP and Static
+assignments from the table above.
 
 ![reservations](/img/maas/reserved-ranges.png)
 
@@ -300,15 +303,16 @@ non-maas network clients.
 
 ## Testing MAAS PXE without DHCP
 
-I'll verify everything works with a KVM inside the MAAS LXD. That will confirm
-that MAAS is working as expected and I'll be using the KVM as the controller
-node for juju anyway.
+Time to verify everything works with a KVM inside the MAAS LXD. That will
+confirm that MAAS is working as expected and the KVM can be used as the
+controller node for juju.
 
 virsh-install is available in the container to create the VM but the --pxe
 option only applies to the first boot. A quick work around is to generate the
 VM, export the xml, destory the domain, and create it from the xml. At least you
 don't have to write the xml file!
 
+Run this command to get the KVM setup.
 ```bash
 $ lxc exec maas-test -- virt-install \
 --name=juju-controller \
