@@ -11,7 +11,11 @@
   <meta name="description" content="{{ page.subtitle }}">
   {% endif %}
 
+  {% if site.feedburner %}
+  <link rel="alternate" type="application/rss+xml" title="{{ site.title }} {{ site.title-separator }} {{ site.description }}" href="http://feeds.feedburner.com/{{ site.feedburner }}" />
+  {% else %}
   <link rel="alternate" type="application/rss+xml" title="{{ site.title }} {{ site.title-separator }} {{ site.description }}" href="{{ site.baseurl }}/feed.xml" />
+  {% endif %}
 
   {% include gtm_head.html %}
 
