@@ -249,8 +249,8 @@ mask from ```255.255.255.0``` to ```255.255.254.0```.
 
 This setting is found on the settings page ```LAN/LAN IP```
 
-![subnet mask](/img/maas/router-subnetmask.png)
- 
+![subnet mask](/img/maas/router-subnetmask.png){:.img-shadow .img-rounded}
+
 #### DNS Server
 
 Add the MAAS IP as an additional DNS server, and be sure "Advertise router's IP"

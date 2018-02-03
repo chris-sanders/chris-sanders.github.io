@@ -772,3 +772,7 @@ td.gutter {
   font-style: italic;
   font-size: 16px;
 }
+
+.img-shadow {
+  box-shadow: 10px 10px 10px gray;
+}
