@@ -260,7 +260,7 @@ the MAAS machine is down for some reason DNS will work the same as before.
 
 This setting is found on the settings page ```LAN/DHCP Server```
 
-![DNS Settings](/img/maas/router-dns.png)
+![DNS Settings](/img/maas/router-dns.png){:.img-shadow .img-rounded}
 
 ### MAAS Configuration
 
@@ -269,11 +269,11 @@ This setting is found on the settings page ```LAN/DHCP Server```
 When logging into MAAS for the first time set DNS forwarding to forward to the
 router.
 
-![DNS forward](/img/maas/dns-forwarder.png)
+![DNS forward](/img/maas/dns-forwarder.png){:.img-shadow .img-rounded}
 
 If your MAAS is already running set it in ```Settings```
 
-![DNS forward](/img/maas/maas-settings-dns.png)
+![DNS forward](/img/maas/maas-settings-dns.png){:.img-shadow .img-rounded}
 
 #### Configure Subnet
 
@@ -281,20 +281,20 @@ In MAAS go to the tab ```Subnets``` and in the drop down box on the right
 labeled "Add" choose "Space". Fill in the a name and click the green "Add space"
 button to save it. I used "home-space" for the name.
 
-![add space](/img/maas/add-space.png)
+![add space](/img/maas/add-space.png){:.img-shadow .img-rounded}
 
 Now select the Subnet ```192.168.0.0/23``` from the table below. Verify that
 your CIDR, Gateway, and DNS are set correctly. These are the settings that
 match the IP table shown above and the subnetmask setup on the router.
 Additionally, add your space to the Space field.
 
-![subnet summary](/img/maas/subnet-settings.png)
+![subnet summary](/img/maas/subnet-settings.png){:.img-shadow .img-rounded}
 
 Finally scroll down to the Reserved section and add reservations via the
 "Reserve range" button. Set reservations which cover the DHCP and Static
 assignments from the table above.
 
-![reservations](/img/maas/reserved-ranges.png)
+![reservations](/img/maas/reserved-ranges.png){:.img-shadow .img-rounded}
 
 With this configuration MAAS will use IP address in the CIDR, which are not
 reserved, for assignemnt to LXD containers. MAAS and the local router are
@@ -336,12 +336,12 @@ lxc exec maas-test -- virsh start juju-controller
 Once the VM finishes creation it should be picked up in MAAS under the "Nodes"
 tab.
 
-![new node](/img/maas/node-discovery.png)
+![new node](/img/maas/node-discovery.png){:.img-shadow .img-rounded}
 
 Click on the node name and then the "Configuration" tab, configure the power
 setting for Virsh.
 
-![power-config](/img/maas/power-config2.png)
+![power-config](/img/maas/power-config2.png){:.img-shadow .img-rounded}
 
 After saving, use the "Take Action" menu on the top right and choose
 "Commission" and then click the green "Commission machine" button to start.
