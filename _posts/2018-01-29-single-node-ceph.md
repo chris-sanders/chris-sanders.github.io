@@ -3,6 +3,7 @@ layout: post
 title:  "Single node ceph"
 subtitle: "Probably a terrible idea"
 date:   2018-01-29 20:00:00 +0000
+share-img: "/img/ceph_icon.webp"
 image: "/img/ceph_icon.webp"
 tags: [ceph, homelab]
 ---

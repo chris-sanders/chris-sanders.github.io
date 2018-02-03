@@ -5,6 +5,7 @@ subtitle: "The unsupported configuration"
 date: 2018-02-02 20:00:00 +0000
 gh-repo: chris-sanders/maas-lxd
 gh-badge: [star, fork, follow]
+share-img: "/img/maas-logo.svg"
 image: "/img/maas-logo.svg"
 tags: [homelab, maas, lxd]
 ---
