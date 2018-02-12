@@ -3,8 +3,8 @@ layout: post
 title:  "Deploying Single node ceph"
 subtitle: "A managed approach"
 date:   2018-01-31 20:00:00 +0000
-share-img: "/img/ceph_icon.webp"
-image: "/img/ceph_icon.webp"
+share-img: "/img/ceph_logo.png"
+image: "/img/ceph_logo.png"
 tags: [ceph, homelab, maas, juju]
 ---
 
