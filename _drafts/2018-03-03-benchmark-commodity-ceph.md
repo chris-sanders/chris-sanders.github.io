@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "Benchmarking Ceph on commodity hardware"
-subtitle: "The haystack"
+subtitle: "That'll do pig, that'll do"
 date:   2018-03-03 20:00:00 +0000
 share-img: "/img/ceph_logo.png"
 image: "/img/ceph_logo.png"
