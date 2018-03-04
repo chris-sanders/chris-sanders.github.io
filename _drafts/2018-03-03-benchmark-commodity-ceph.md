@@ -10,11 +10,10 @@ gh-badge: [star, fork, follow]
 tags: [ceph, homelab]
 ---
 
-Benchmarking is notoriously hard to do correctly, today I'm going to provide the
-raw results of many hours of benchmarks. I'll draw some conclusions
-specifically comparing performance on my hardware, hopefully it provides some
-insight for single node Ceph on commodity hardware for anyone else
-considering this setup.
+Benchmarking is notoriously hard to do correctly, I'm going to provide the raw
+results of many hours of benchmarks. I'll draw some conclusions specifically
+comparing performance on my hardware, hopefully it provides some insight for
+single node Ceph on commodity hardware for anyone else considering this setup.
 
 Specifically I'm looking to compare:
  - Bluestore vs Filestore
