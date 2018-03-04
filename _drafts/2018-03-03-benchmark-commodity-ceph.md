@@ -3,8 +3,8 @@ layout: post
 title:  "Benchmarking Ceph on commodity hardware"
 subtitle: "That'll do pig, that'll do"
 date:   2018-03-03 20:00:00 +0000
-share-img: "/img/ceph_logo.png"
-image: "/img/ceph_logo.png"
+share-img: "/img/fio/narrow-road.png"
+image: "/img/fio/narrow-road.png"
 gh-repo: chris-sanders/ceph-fio-results
 gh-badge: [star, fork, follow]
 tags: [ceph, homelab]
@@ -132,7 +132,7 @@ Next with only the top 3 drives.
 
 | Store (3 drive)     | randomwrite-4k   | write-1M | read-1M | rw-1M |
 | -----     | --------         | -------  | -----   | ----  |
-| Filestore | 1039 KB/s | 41.06 MB/s | **114.79** MB/s | 42.57 / 42.71 MB/s |
+| Filestore | **1039** KB/s | 41.06 MB/s | **114.79** MB/s | 42.57 / 42.71 MB/s |
 | BS Replicated | 1071 KB/s | 64.87 MB/s | 112.18 MB/s | 41.14 / 39.51 MB/s |
 | BS K2,M1 | 536 KB/s | **93.87** MB/s | 96.53 MB/s | **44.38 / 44.28** MB/s |
 
@@ -151,6 +151,11 @@ Replicated pool, and supports the 1 drive failure domain for significantly lower
 overhead and better write performance. For large block size writes with a few
 more drives the Erasure pool will likely become network limited matching the
 Replicated pool read performance with lower hard drive overhead.
+
+Note: These conclusions are for 1G networking. The [filestore-lxd] read test
+performed in a LXD container with 4 processes to remove the network bottleneck
+was able to bench at **488.84 MB/s**. Any conclusions here are focused on 1G
+networks. Results at ~112-114 MB/s should be considered network capped.
 
 ## Conclusions
 
@@ -174,4 +179,4 @@ node.
 [hardware-yaml]: https://github.com/chris-sanders/ceph-fio-results/blob/master/hardware.yaml
 [hdd-folder]: https://github.com/chris-sanders/ceph-fio-results/tree/master/hdd 
 [unraid]: https://lime-technology.com/
-
+[filestore-lxd]: https://github.com/chris-sanders/ceph-fio-results/blob/master/filestore/fourjobs-lxd/read-1M.out
