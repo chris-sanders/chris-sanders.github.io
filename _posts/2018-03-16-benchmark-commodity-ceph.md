@@ -2,7 +2,7 @@
 layout: post
 title:  "Benchmarking Ceph on commodity hardware"
 subtitle: "That'll do pig, that'll do"
-date:   2018-03-03 20:00:00 +0000
+date:   2018-03-16 20:00:00 +0000
 share-img: "/img/fio/narrow-road.png"
 image: "/img/fio/narrow-road.png"
 gh-repo: chris-sanders/ceph-fio-results
@@ -23,7 +23,7 @@ Specifically I'm looking to compare:
 ## Hardware
 
 A full inventory of the hardware can be found in the repository in the file
-[hardware.yaml][hardware-yaml]. These tests are on a Supermicro X8DTN, with two
+[hardware.yaml][hardware-yaml]. These tests are on a Supermicro X8DTN with two
 hyper threaded hex core processors and 144 GiB of ram. This chassis supports 12
 SATA hard drives, four are in use for benchmarking. The first two hard drives
 are setup with a raid 1 for the host OS as well as Ceph OSD. The second two
@@ -44,7 +44,7 @@ will perform as it expands with mixed hardware.
 
 All of the testing has been done with fio. Each run has several logs available.
  - [configuration].fio - the configuration for the run
- - [RW]-[BS].out - command line put for a run with the given RW setting and
+ - [RW]-[BS].out - command line output for a run with the given RW setting and
    Block Size.
  - *.log - FIO log files during the run
  - *.png - Graphs created with fio2gnupg
@@ -83,22 +83,22 @@ in performance across the drives.
 
 With the base hardware numbers complete, let's move on to comparing Filestore vs
 Bluestore. In this comparison I'll only be comparing Replicated pools because
-Filestore doesn't support Erasure pools with out a cache layer. Additionally,
+Filestore doesn't support Erasure pools without a cache layer. Additionally,
 testing is being done over the network with the kernel driver. Across all
 testing scenarios the Fuse driver performed poorly in comparison to the in
 kernel driver.
 
 | Store     | randomwrite-4k   | write-1M | read-1M | rw-1M |
 | -----     | --------    | -------     | -----              |
-| Filestore | **1074** KB/s | 44.27 MB/s | **114.74** MB/s | **42.08 / 42.17** MB/s |
-| Bluestore | 757  KB/s | **46.72 MB/s** | 104.40 MB/s | 33.72 / 33.04 MB/s |
+| Filestore | 268 iops, **1074** KB/s | 44.27 MB/s | **114.74** MB/s | **42.08 / 42.17** MB/s |
+| Bluestore | 189 iops, 757  KB/s | **46.72 MB/s** | 104.40 MB/s | 33.72 / 33.04 MB/s |
 
 Next with only the top 3 drives.
 
 | Store     | randomwrite-4k   | write-1M | read-1M | rw-1M |
 | -----     | --------         | -------  | -----   | ----  |
-| Filestore 3 drive | 1039 KB/s | 41.06 MB/s | **114.79** MB/s | **42.57 / 42.71** MB/s |
-| Bluestore 3 drive | **1071** KB/s | **64.87** MB/s | 112.18 MB/s | 41.14 / 39.51 MB/s |
+| Filestore 3 drive | 259 iops, 1039 KB/s | 41.06 MB/s | **114.79** MB/s | **42.57 / 42.71** MB/s |
+| Bluestore 3 drive | 267 iops, **1071** KB/s | **64.87** MB/s | 112.18 MB/s | 41.14 / 39.51 MB/s |
 
 ### Bluestore vs Filestore Results
 
@@ -123,18 +123,18 @@ of parity chunks. You can loose M drives without loosing data.
 
 | Store     | randomwrite-4k   | write-1M | read-1M | rw-1M |
 | -----     | --------    | -------     | -----              |
-| Filestore | **1074** KB/s | 44.27 MB/s | **114.74** MB/s | 42.08 / 42.17 MB/s |
-| BS Replicated | 757  KB/s | 46.72 MB/s | 104.40 MB/s | 33.72 / 33.04 MB/s |
-| BS K2,M1 | 512 KB/s | **83.36** MB/s | 95.05 MB/s | **63.67 / 66.25** MB/s |
-| BS K2,M2 | 464 KB/s | 69.12 MB/s | 107.31 MB/s | 49.80 / 48.19 MB/s |
+| Filestore | 268 iops, **1074** KB/s | 44.27 MB/s | **114.74** MB/s | 42.08 / 42.17 MB/s |
+| BS Replicated | 189 iops, 757  KB/s | 46.72 MB/s | 104.40 MB/s | 33.72 / 33.04 MB/s |
+| BS K2,M1 | 128 iops, 512 KB/s | **83.36** MB/s | 95.05 MB/s | **63.67 / 66.25** MB/s |
+| BS K2,M2 | 116 iops, 464 KB/s | 69.12 MB/s | 107.31 MB/s | 49.80 / 48.19 MB/s |
 
 Next with only the top 3 drives.
 
 | Store (3 drive)     | randomwrite-4k   | write-1M | read-1M | rw-1M |
 | -----     | --------         | -------  | -----   | ----  |
-| Filestore | **1039** KB/s | 41.06 MB/s | **114.79** MB/s | 42.57 / 42.71 MB/s |
-| BS Replicated | 1071 KB/s | 64.87 MB/s | 112.18 MB/s | 41.14 / 39.51 MB/s |
-| BS K2,M1 | 536 KB/s | **93.87** MB/s | 96.53 MB/s | **44.38 / 44.28** MB/s |
+| Filestore | 259 iops, **1039** KB/s | 41.06 MB/s | **114.79** MB/s | 42.57 / 42.71 MB/s |
+| BS Replicated | 267 iops, 1071 KB/s | 64.87 MB/s | 112.18 MB/s | 41.14 / 39.51 MB/s |
+| BS K2,M1 | 134 iops, 536 KB/s | **93.87** MB/s | 96.53 MB/s | **44.38 / 44.28** MB/s |
 
 
 ### Replicated vs Erasure Results
@@ -175,6 +175,12 @@ checksums like ZFS, has a lower hard drive overhead, and can expand horizontally
 to more Ceph nodes in the future. Additionally, it's running a full Ubuntu base
 that can easily deploy more software in LXD containers operating as a compute
 node.
+
+These benchmarks are good enough that I plan to continue setting up a single
+node Ceph for home storage. Since my current deployment was intended
+specifically for benchmarking, I plan on testing a path for safe upgrades so the
+changes can be run with a reasonable expectation of future upgrades without data
+loss.
 
 [hardware-yaml]: https://github.com/chris-sanders/ceph-fio-results/blob/master/hardware.yaml
 [hdd-folder]: https://github.com/chris-sanders/ceph-fio-results/tree/master/hdd 
