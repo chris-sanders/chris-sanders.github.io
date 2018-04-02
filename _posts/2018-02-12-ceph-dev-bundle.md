@@ -156,6 +156,8 @@ file systems with out requiring a cache layer. Erasure coding provides a
 configurable mix of failure domain and storage efficiency.
 
 {: .box-warning}
+**12.2.2 Is now available**, this warning is left only to remind anyone that
+deployed originally to upgrade.
 There is a known race condition in Ceph 12.2.1 with Bluestore. This can corrupt
 an OSD. There is a fix in 12.2.2, but as of this writing the Ubuntu Cloud
 Archive is using 12.2.1. This is fine for testing and 12.2.2 should be available
