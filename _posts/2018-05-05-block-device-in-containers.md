@@ -9,9 +9,9 @@ tags: [ceph, lxd, homelab]
 ---
 
 Containers are a great tool for delivering and operating software. There are
-some situations that prove difficult to run in containers including applications
+some situations that are difficult to run in containers including applications
 which require access to block devices. LXD provides a way to mount block
-devices into a container enabling applications like ceph-osd to run inside a
+devices into a container allowing applications like ceph-osd to run inside a
 LXD container. This post will describe how I'm using LXD to containerize
 ceph-osd, the benefits it provides, and some caveats you should be aware if you
 go down a similar path.
@@ -22,22 +22,22 @@ node Ceph server in my home lab. Details are available in other blog posts, if
 you're interested in the details of the setup you can [read more][read more]
 on those posts.
 
-I've made changes to several of the charms used to deploy Ceph to make them
-more home lab friendly. Those changes have not yet received reviews ([feedback
-welcome][gerrit]). I want a path forward with my current changes
-and a reasonable expectation to upgrade or switch back to the upstream charm at
-a later date. For most of the setup LXD provides flexibility in deployment
-which can allow a rolling upgrade process. Both ceph-mon and ceph-fs deploy in
-containers with no special configuration. The exception has been ceph-osd which
-needs to access the block devices.
+I've made changes to several of the charms used to deploy Ceph to make them more
+home lab friendly. Those changes have not yet received reviews ([feedback
+welcome][gerrit]). I want a path forward with my current changes and a
+reasonable expectation to upgrade or switch back to the upstream charm at a
+later date. For most of the setup installing in LXD containers allows a rolling
+upgrade process. Both ceph-mon and ceph-fs deploy in containers with no special
+configuration. The exception has been ceph-osd which needs to access the block
+devices.
 
 By installing ceph-osd in a LXD container I've been able to migrate drives
 between different versions of ceph-osd charm. While this isn't a guarantee of
-forward compatibility as long as the ceph-osd charm can recognize and use
+forward compatibility, as long as the ceph-osd charm can recognize and use
 existing ceph block devices the rest of the charm can be completely changed and
-the drives imported with no compatibility requirements between the two charms.
-Additionally, ceph-osd can be reinstalled without releasing and redeploying the
-bare metal which would wipe some of the drives during reinstall.
+with no compatibility requirements for the charm. Additionally, ceph-osd can be
+reinstalled without releasing and redeploying the bare metal which would wipe
+some of the drives during reinstall.
 
 ## The setup
 
@@ -143,9 +143,10 @@ LABEL="persistent_storage_end"
 
 These rules are logging any add and remove events in a log file in
 /root/udev.log for debugging purposes. You can remove that after you have
-confirmed creating and removing partitions work as expected although the number
-of add and remove events should not be large. With the udev rules in place the
-ceph-osd charm can fully manage the devices that have been passed through.
+confirmed creating and removing partitions work as expected. The number of add
+and remove events should not be large so it's fine to leave in place as well.
+With the udev rules in the container the ceph-osd charm can fully manage the devices
+that have been passed through.
 
 ## Notes on use with ceph-osd
 
