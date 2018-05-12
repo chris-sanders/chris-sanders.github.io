@@ -2,14 +2,14 @@
 layout: post
 title:  "Installing ceph-osd in a container"
 subtitle: "Thinking inside the box"
-date:   2018-05-04 20:00:00 +0000
+date:   2018-05-11 20:00:00 +0000
 share-img: "/img/lxd_logo.png"
 image: "/img/lxd_logo.png"
 tags: [ceph, lxd, homelab]
 ---
 
 Containers are a great tool for delivering and operating software. There are
-some situations that prove difficult to run in containers like applications
+some situations that prove difficult to run in containers including applications
 which require access to block devices. LXD provides a way to mount block
 devices into a container enabling applications like ceph-osd to run inside a
 LXD container. This post will describe how I'm using LXD to containerize
@@ -24,7 +24,7 @@ on those posts.
 
 I've made changes to several of the charms used to deploy Ceph to make them
 more home lab friendly. Those changes have not yet received reviews ([feedback
-or assistance welcome][gerrit]). I want a path forward with my current changes
+welcome][gerrit]). I want a path forward with my current changes
 and a reasonable expectation to upgrade or switch back to the upstream charm at
 a later date. For most of the setup LXD provides flexibility in deployment
 which can allow a rolling upgrade process. Both ceph-mon and ceph-fs deploy in
@@ -45,7 +45,13 @@ bare metal which would wipe some of the drives during reinstall.
 
 LXD Provides [documentation][device configuration] on configuring devices for
 LXD containers. For this configuration, you'll need to pass through the block
-devices, loop devices, and loop-control. The profile I'm using for this is:
+devices, loop devices, and loop-control. Additionally, several allowances need
+to be made for modifying the block devices. This will remove much of the
+isolation that a container normally provides. In this case the container is not
+being used for security reasons so that's fine but be aware if using a similar
+setup for other use cases.
+
+The profile I'm using for this is:
 
 ```yaml
 config:
@@ -160,7 +166,7 @@ and do burn in testing before adding them to the ceph LXD.
 
 Removing devices requires additional thought. If you are permanently removing
 the device you must also remove it from the LXD profile. LXD will not start a
-container if a device is defined but not available to mount in the container.
+container if a device is defined and not available to mount in the container.
 The container will continue to run however if a device which was mounted during
 boot is no longer available. Additionally, since devices are mounted by their
 /dev/sdX path you must account for the device renaming when the host is
@@ -180,31 +186,45 @@ the drive to be mounted into the container.
 
 ### Reinstalling / Migrating charm
 
-The ceph-osd charm will import drives that are already setup for Ceph and match
-the existing pool, therefore migrating the drives to a new container works with
-out any extra configuration. Removing the original ceph-osd container,
-installing a new container, and passing the drives through to the new container
-will import the drives. As the osd processes check in with the cluster Ceph
-will show the osds move to the new host. After all of the osds are recognized
-on the new host the old host, which should have no osds, can be purged. The
-only thing common to the two charms are the block devices, there is no chance
-for compatibility issues between charm versions.  Any ceph-osd charm that
-recognizes the devices will work.
+The ceph-osd charm will import drives that are setup for Ceph and match the
+existing pool this makes migrating the drives to a new container straight
+forward. Passing drives through to a new ceph-osd container will import the
+drives with no user intervention needed. After adding new devices to the
+container a restart of the container will re-scan the drives. The charm will
+recognize the devices as OSD devices and start the osd processes, Ceph will show
+the osds move to the new host as they check in with the ceph-mon. After all of
+the osds are recognized on the new host the old host, which should have no osds,
+can be purged. The only thing common to the two charms are the block devices,
+there is no chance for compatibility issues between charm versions.  Any
+ceph-osd charm that recognizes the devices will work.
+
+A helpful hint while testing this setup, you can poke the ceph-osd charm to make
+it rescan devices without rebooting. This could change in future charms so I
+only recommend you use this if you're familiar with the charm or using it during
+testing. Calling the hook ```storage.real``` will cause a rescan.
+```bash
+juju run "./hooks/storage.real" --service=ceph-osd
+```
 
 ### Restrictions
 
 I have not tested this with journal devices or bcache. Both configurations add
-additional complexity to identifying devices and may not work. If using journal
-devices be aware moving devices between ceph nodes requires the journal and the
-block device be moved together.
+additional complexity to identifying devices and may not work with the provided
+udev and profile. Also, if using journal devices be aware moving devices between
+ceph nodes requires the journal and the block device be moved together this will
+apply to moving devices between two ceph-osd containers as well.
 
 I have tested encryption and this configuration does not support cryptsetup
 inside the container. This is not a limitation of the ceph-osd charm but a
-conflict with the kernel driver inside a LXD containers. If a configuration
+conflict with the kernel driver inside a LXD container. If a configuration
 which allows cryptsetup to work from within a container is found the ceph-osd
 charm should work. As above this adds additional complexity to the drive/device
 mappings and may require additional care when adding, removing, or replacing
-drives.
+drives. Do not try to containerize encrypted drives with my fork of the
+ceph-charms and the above configurationg.
+
+If you know how to get cryptsetup working in a LXD I am interested to hear about
+it, I simply haven't had time to dig into the issue.
 
 
 [read more]: https://chris-sanders.github.io/tags/#ceph
