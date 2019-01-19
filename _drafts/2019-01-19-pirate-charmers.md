@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "Pirate-charmers"
-subtitle: "setting sail"
+subtitle: "Setting sail"
 date:   2018-09-19 20:00:00 +0000
 share-img: "/img/pirate-charmers/pirate-charmers.png"
 image: "/img/pirate-charmers/pirate-charmers.png"
@@ -11,10 +11,10 @@ tags: [homelab, juju, charms]
 Several years ago I set down a path to move my personal infrastructure into juju
 control. Along the way I've written several charms and blog posts about the
 things I've learned and developed. Today I'm happy to announce I'm
-ending my solo effort and will be joined by James aka [ec0][ec0-blog].
+ending my solo effort because I am being joined by James aka [ec0][ec0-blog].
 
 # Pirate-Charmers
-To transition from a single owner to a group my current charms will will be moving to the 
+To transition from a single owner to a group, my current charms will be moving to the 
 namespace pirate-charmers both [on github][pirate-charmers-github] as well as 
 [on the charm store][pirate-charmers-charmstore]. New charms will be started
 directly in this name space.
@@ -82,6 +82,10 @@ above mentioned weechat setup is an example, and Gitlab itself requires several
 components to get running. By providing a bundle we can easily show how it works
 and you can integrate that into your environment.
 
+Bundles are also a good way to demonstrate how some of the charms that are out
+there today can be leveraged with the charms we are writing. Specifically
+logging, monitoring, and alerting have come to mind as things we will be
+supporting in our charms.
 
 
 [ec0-blog]: ec0.io
