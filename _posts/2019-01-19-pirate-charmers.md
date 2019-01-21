@@ -2,7 +2,7 @@
 layout: post
 title:  "Pirate-charmers"
 subtitle: "Setting sail"
-date:   2018-09-19 20:00:00 +0000
+date:   2019-01-19 20:00:00 +0000
 share-img: "/img/pirate-charmers/pirate-charmers.png"
 image: "/img/pirate-charmers/pirate-charmers.png"
 tags: [homelab, juju, charms]
