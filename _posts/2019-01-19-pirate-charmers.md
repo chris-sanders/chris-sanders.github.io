@@ -5,7 +5,7 @@ subtitle: "Setting sail"
 date:   2019-01-19 20:00:00 +0000
 share-img: "/img/pirate-charmers/pirate-charmers.png"
 image: "/img/pirate-charmers/pirate-charmers.png"
-tags: [homelab, juju, charms]
+tags: [homelab, juju, charms, pirate-charmers]
 ---
 
 Several years ago I set down a path to move my personal infrastructure into juju
