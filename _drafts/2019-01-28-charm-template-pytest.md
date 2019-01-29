@@ -177,8 +177,46 @@ To support the testing of this helper class there are several
 [pytest-fixtures][fixture-docs] which pytest loads from the default file
 `src/tests/unit/conftest.py`. Fixtures build on each other, and the last fixture
 in the file named `ddclient` returns an instance of the class patched for many
-of the common uses. The example test demonstrates that the config is loaded as
-expected and set to the default values in the `config.yaml` for the charm.
+of the common uses. 
+
+```bash
+@pytest.fixture
+def ddclient(tmpdir, mock_hookenv_config, mock_charm_dir, monkeypatch):
+    from lib_ddclient import DdclientHelper
+    helper = DdclientHelper()
+
+    # Example config file patching
+    cfg_file = tmpdir.join('example.cfg')
+    with open('./tests/unit/example.cfg', 'r') as src_file:
+        cfg_file.write(src_file.read())
+    helper.example_config_file = cfg_file.strpath
+
+    # Any other functions that load helper will get this version
+    monkeypatch.setattr('lib_ddclient.DdclientHelper', lambda: helper)
+
+    return helper
+```
+The *ddclient* fixture is defined above using several other fixtures defined
+earlier in the file. The *tmpdir* fixture is a pytest built in fixture and
+generates files in a `/tmp/pytest-*` folders as the name implies. This is a good
+way to test the writing or manipulating of files without having to deploy the
+charm. You can see where an known config file is written from the test directory
+into the tmp directory and the path patched into the helper. Any methods in the
+library that process the config file will have a valid known file to test
+processing with.
+
+With the fixture in place, writing a test that checks that the charm config has
+been loaded is very straight forward. Here is the test from
+`src/tests/unit/test_lib.py`
+
+```bash
+def test_ddclient(ddclient):
+    ''' See if the helper fixture works to load charm configs '''
+    assert isinstance(ddclient.charm_config, dict)
+```
+The above *ddclient* fixture is requested and the charm_config is verified to be
+a dict as expected. For simple cases like this, the mocking can happen entirely
+in the fixture and the test can focus on verifying that methods work as expected.
 
 The use of pytest fixtures is beyond the scope of this post, but you can see
 examples on the github including [layer-weechat][layer-weechat] and
@@ -199,11 +237,34 @@ asyncio you might want to [review the documenation][asyncio] if you are new to
 this feature of python3.
 
 By default the functional test will deploy the charm once for each series
-specified in the test (xenial and bionic by default), check that the status
+specified in the test (xenial and bionic), check that the status
 reaches 'active' on both units, and call the example action verifying the call
 completes. Libjuju allows you to programmatically interact with juju deploying,
 configuring, and even relating applications to each other. Fixtures are provided
 making accessing the deployed applications and units straight forward.
+
+```bash
+@pytest.mark.parametrize('series', series)
+async def test_ddclient_deploy(model, series):
+    # Starts a deploy for each series
+    await model.deploy('{}/builds/ddclient'.format(juju_repository),
+                       series=series,
+                       application_name='ddclient-{}'.format(series))
+    assert True
+
+
+async def test_ddclient_status(apps, model):
+    # Verifies status for all deployed series of the charm
+    for app in apps:
+        await model.block_until(lambda: app.status == 'active')
+    assert True
+```
+This snippet shows *test_ddclient_deploy* using the fixture *model* to start
+deploying the charm once per series (xenial and bionic). After the deploys are 
+successfully started
+*test_ddclient_status* then waits for each application to reach the active
+status, using the fixtures *model* and *apps*. All fixtures are defined at the
+top of the *test_deploy.py* file above these tests.
 
 Once the units are deployed actions can be run, files, and services checked, and
 ports and APIs exercised to verify they are working as expected. Libjuju
@@ -216,6 +277,7 @@ of ways we are testing functionally. Don't forget to include any python modules
 you need in the functional test requirements.txt file to make them available in
 the virtual environment during testing.
 
+### Running functional tests
 To run the functional tests you can run `make functional` from the root folder.
 This will build the charm, and then run the tests which deploy from the build
 directory. Building a charm can be time consuming, as can deploying it. Any
@@ -233,12 +295,12 @@ copy your final test_deploy.py file back to your source folder or all changes
 will be lost on the next build when the source folder is written back to the
 build folder.
 
-I would like to specifically point out that you can save significant time while
+You can save significant time while
 writing tests by rerunning the tests without removing the model or applications
 that were deployed. The charms will fail to deploy if they are already deployed
 but the test suite will continue to run. This means if the deploy is passing and
-you are writing test you do not need to remove and re-deploy them for each
-iteration.
+you are writing test to exercise the units you do not need to remove and re-deploy 
+them for each iteration.
 
 [part1]: https://chris-sanders.github.io/2019-01-28-charm-create/
 [pytest]: https://docs.pytest.org/en/latest/
