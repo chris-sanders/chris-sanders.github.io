@@ -1,12 +1,12 @@
 ---
 layout: post
-title:  "Charm Pytest Template"
-subtitle: "Template features"
+title:  "Pytest Template"
+subtitle: "Design details"
 date:   2019-01-28 20:00:00 +0000
 gh-repo: pirate-charmers/template-python-pytest
 gh-badge: [star, fork, follow]
-# share-img: "/img/pirate-charmers/pirate-charmers.png"
-# image: "/img/pirate-charmers/pirate-charmers.png"
+share-img: "/img/design-blueprint.png"
+image: "/img/design-blueprint.png"
 tags: [charms, pirate-charmers, charm-template]
 ---
 This post builds on [a previous post][part1] to go into details of the
