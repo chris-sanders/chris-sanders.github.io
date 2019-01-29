@@ -234,7 +234,7 @@ do not install my 'production' workloads in the model named default. I consider
 anything in such a model expendable. I recommend getting in a similar habit to
 avoid completely removing a production model. While you will be prompted, I
 destroy and recreate the default models on my local host frequently enough it's
-muscle memory at this point and a warning prompt no longer cause me any pause.
+muscle memory at this point and a warning prompt no longer causes me any pause.
 Pick a name for testing and stick to it, it just might save your deployment.
 
 [charm-template]: https://github.com/pirate-charmers/charm-template.git 
