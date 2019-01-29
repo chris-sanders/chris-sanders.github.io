@@ -1,12 +1,12 @@
 ---
 layout: post
-title:  "Charm Templates [1/X]"
-subtitle: "Code sooner"
-date:   2019-01-27 20:00:00 +0000
+title:  "Charm Create"
+subtitle: "Where to start"
+date:   2019-01-28 20:00:00 +0000
 gh-repo: pirate-charmers/charm-template
 gh-badge: [star, fork, follow]
-# share-img: "/img/pirate-charmers/pirate-charmers.png"
-# image: "/img/pirate-charmers/pirate-charmers.png"
+share-img: "/img/board-cubes.png"
+image: "/img/board-cubes.png"
 tags: [charms, pirate-charmers, charm-template]
 ---
 Charms are very flexible and can be written several ways and even in different
@@ -101,7 +101,7 @@ juju bootstrap localhost lxd
 ```
 If everything went well `juju status` should show an empty model named default
 is ready for use. Now you can run the tests with from the root of the template
-folder you'll need make and tox:
+folder you'll and will need just two dependencies make and tox:
 
 ```bash
 sudo apt install make tox
@@ -111,9 +111,9 @@ In this case I'm setting the current directory to the JUJU_REPOSITORY because
 I'm running in a container. I have an environment variable set for a common
 location that I build charms to on my workstation which removes the need to
 specify the repository location when calling make. If you are new to charming you can [read
-more][charm-docs] in the getting started documents about what the environment
-variable does. The Layer and Interface paths I do not set as the template
-handles that for you (more on that below).
+more][charm-docs] in the getting started documents about the environment
+variables. However, with this template only the JUJU_REPOSITORY need to be set
+because the Layer and Interface paths are set by the template.
 
 That's all you should need. This will install a python virtual environment for
 unit testing, unit test the template, build it into a charm, install a virtual
@@ -217,13 +217,15 @@ Machine  State    DNS             Inst id        Series  AZ  Message
 
 ```
 
-At this point you have a fully functional charm which unit tests and
-deploys locally. If you are familiar with charming, you this might be all you
-need to get started. I'll follow up with additional posts to go through the
-details of how the template is organized and why.
+At this point you have an empty but deployable charm which unit tests and
+deploys locally. If you are familiar with charming, this might be all you
+need to get started. If you are new to charming you can use the template to
+learn even before you understand all of the moving parts. Eventually you will
+want to understand how testing is done. I'll follow up with additional post(s) 
+to go through the details of how the template is organized and why.
 
 To clean up your model you can destroy the default model and create a clean one
-to deploy to again fresh.
+to deploy to again.
 ```bash
 juju destroy-model default && juju add-model default
 ```
@@ -233,8 +235,7 @@ anything in such a model expendable. I recommend getting in a similar habit to
 avoid completely removing a production model. While you will be prompted, I
 destroy and recreate the default models on my local host frequently enough it's
 muscle memory at this point and a warning prompt no longer cause me any pause.
-Pick a name for testing and stick to it, it just might save your deployment, it
-has mine.
+Pick a name for testing and stick to it, it just might save your deployment.
 
 [charm-template]: https://github.com/pirate-charmers/charm-template.git 
 [juju-lxd]: https://docs.jujucharms.com/2.5/en/clouds-LXD

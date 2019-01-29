@@ -1,15 +1,15 @@
 ---
 layout: post
-title:  "Charm Templates [2/X]"
+title:  "Charm Pytest Template"
 subtitle: "Template features"
-date:   2019-01-27 20:00:00 +0000
+date:   2019-01-28 20:00:00 +0000
 gh-repo: pirate-charmers/template-python-pytest
 gh-badge: [star, fork, follow]
 # share-img: "/img/pirate-charmers/pirate-charmers.png"
 # image: "/img/pirate-charmers/pirate-charmers.png"
 tags: [charms, pirate-charmers, charm-template]
 ---
-This post continues from [a previous post][part1] to go into details of the
+This post builds on [a previous post][part1] to go into details of the
 python-pytest charm template. I will review the layout of the charm
 and how to write/expand the testing for your charm. Writing code with testing in
 mind from the start can make testing significantly easier.
