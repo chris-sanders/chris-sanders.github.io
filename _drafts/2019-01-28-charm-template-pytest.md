@@ -103,14 +103,6 @@ Building the charm is driven by the Makefile. Before building, it's a good idea
 to update any submodules with `make submodules`. You
 can see the available options in the Makefile with `make help`.
 
-During all of the test runs (lint, unittest, functional) a virtual environment
-will be created for dependencies. The first run will therefore take slightly
-longer with additional runs reusing the environment. If you change the
-dependencies you will likely need to run `make clean` to remove the environment
-and install the new dependencies. Similarly if you run any of the tests from the
-built folder you'll want to remove the .tox folder before uploading to the
-charm store.
-
 To build the charm you can use `make release` which will build it to the
 'builds' folder in the JUJU_REPOSITORY directory. Running the build command
 will show the layers and where they are pulled from.
@@ -148,6 +140,14 @@ documentation][fixture-docs] for details on fixtures. I have
 found fixtures to provide a very clean way of scaling reusable test code in
 charms and it's particularly important when dealing with async code in the
 functional tests.
+
+During all of the test runs (lint, unittest, functional) a virtual environment
+will be created for dependencies. The first run will therefore take slightly
+longer with additional runs reusing the environment. If you change the
+dependencies you will likely need to run `make clean` to remove the environment
+to force an install of the new dependencies. Similarly if you run any of the tests from the
+built folder you'll want to remove the .tox folder before uploading to the
+charm store.
 
 ### Unit Testing
 The unit tests are called via [tox][tox], it runs tests found in the folder
@@ -198,11 +198,11 @@ def ddclient(tmpdir, mock_hookenv_config, mock_charm_dir, monkeypatch):
 ```
 The *ddclient* fixture is defined above using several other fixtures defined
 earlier in the file. The *tmpdir* fixture is a pytest built in fixture and
-generates files in a `/tmp/pytest-*` folders as the name implies. This is a good
+generates files in `/tmp/pytest-*` folders as the name implies. This is a good
 way to test the writing or manipulating of files without having to deploy the
 charm. You can see where an known config file is written from the test directory
 into the tmp directory and the path patched into the helper. Any methods in the
-library that process the config file will have a valid known file to test
+class that process this config file will have a valid known file to test
 processing with.
 
 With the fixture in place, writing a test that checks that the charm config has
@@ -232,7 +232,7 @@ does not have any fixtures or even a conftest.py file defined for functional
 testing at this time. Instead a few basic fixtures are provided directly in the
 test file before the tests.
 
-Because the functional testing are driven by [libjuju][libjuju] which uses
+Because the functional testing is driven by [libjuju][libjuju] which uses
 asyncio you might want to [review the documenation][asyncio] if you are new to
 this feature of python3.
 
@@ -241,7 +241,8 @@ specified in the test (xenial and bionic), check that the status
 reaches 'active' on both units, and call the example action verifying the call
 completes. Libjuju allows you to programmatically interact with juju deploying,
 configuring, and even relating applications to each other. Fixtures are provided
-making accessing the deployed applications and units straight forward.
+for accessing the Model, Applications, and Units for the series defined at the
+top of functional test file `src/tests/functional/test_deploy.py`.
 
 ```bash
 @pytest.mark.parametrize('series', series)
@@ -272,15 +273,15 @@ provides several functions to inspect or run commands on units, and each unit
 has a 'public_address' property that can be used to test web interfaces or API
 calls. While using libjuju is charm specific using the requests library to check
 web interfaces is not unique to charms or this template. As before you can
-review the charms in the [pirate charmers github][pirate-charmers] for examples
+review the charms in the [pirate-charmers github][pirate-charmers] for examples
 of ways we are testing functionally. Don't forget to include any python modules
 you need in the functional test requirements.txt file to make them available in
 the virtual environment during testing.
 
 ### Running functional tests
 To run the functional tests you can run `make functional` from the root folder.
-This will build the charm, and then run the tests which deploy from the build
-directory. Building a charm can be time consuming, as can deploying it. Any
+This will build the charm, and then run the tests. Building a charm can be time 
+consuming, as can deploying it. Any
 logic that can be reasonably tested in unit testing is best tested there with
 functional testing verifying the configuration and states that a charm processes
 which are difficult to unit test.
@@ -288,12 +289,12 @@ which are difficult to unit test.
 Some time can be saved while writing functional tests by skipping the charm
 building step. If the charm has not changed, and you are working on writing the
 tests in `src/tests/functional/test_deploy.py` you do not need to rebuild to
-re-run the same test. You can do this by running the functional test from the
+re-run the tests. You can do this by running the functional test from the
 build folder, the tests will still run but the built charm will simply test the
-currently built charm and not re-build it. Be careful that if you do this you
+currently built charm and not re-build it. If you do this be sure to 
 copy your final test_deploy.py file back to your source folder or all changes
 will be lost on the next build when the source folder is written back to the
-build folder.
+build folder (overwriting any changes you made in the build folder).
 
 You can save significant time while
 writing tests by rerunning the tests without removing the model or applications
