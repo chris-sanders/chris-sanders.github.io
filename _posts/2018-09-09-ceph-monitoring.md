@@ -5,7 +5,7 @@ subtitle: "A problem clearly stated is a problem half solved"
 date:   2018-09-09 20:00:00 +0000
 share-img: "/img/monitoring/grafana-prometheus.png"
 image: "/img/monitoring/grafana-prometheus.png"
-tags: [monitoring, ceph, homelab]
+tags: [monitoring, ceph, homelab, juju]
 ---
 
 Many technology projects stop at implementation and configuration. However, the
