@@ -2,7 +2,7 @@
 layout: post
 title:  "Pytest Template"
 subtitle: "Design details"
-date:   2019-01-28 20:00:00 +0000
+date:   2019-02-07 20:00:00 +0000
 gh-repo: pirate-charmers/template-python-pytest
 gh-badge: [star, fork, follow]
 share-img: "/img/design-blueprint.png"
@@ -10,7 +10,7 @@ image: "/img/design-blueprint.png"
 tags: [charms, pirate-charmers, charm-template]
 ---
 This post builds on [a previous post][part1] to go into details of the
-python-pytest charm template. I will review the layout of the charm
+python-pytest charm template. In this post I will review the layout of the charm
 and how to write/expand the testing for your charm. Writing code with testing in
 mind from the start can make testing significantly easier.
 
@@ -29,7 +29,7 @@ The Makefile drives the build/test process, more on that later.
 
 The `src` folder containers the actual charm code, and the `interfaces` and
 `layers` folders are intended to pin revisions of any interfaces and layers you
-use in the charm. The latter two folders are empty on a new template. The build
+use in the charm. These two folders are empty on a new template. The build
 process will look for interfaces and layers in these folders when building the
 charm in the src folder. This allows the use of [git submodules][submodules] to pin layers and
 interfaces to specific branches and revisions. If you do not use this the build
@@ -53,7 +53,7 @@ widely.
 ### Submodule example
 As an example we'll add the [layer-version][layer-version] into the previously
 created template. This layer creates a version file from a git tag at build time
-and uses that as the 'Version' field in the charm. It's not global because the
+and uses that as the 'Version' field in the charm. It's not in the index because the
 version field is intended for *software version* not charm version. However,
 until charm version is supported as a field I'm co-opting it in my charms as I
 find the charm version more relevant than the software version since I can
@@ -145,9 +145,10 @@ During all of the test runs (lint, unittest, functional) a virtual environment
 will be created for dependencies. The first run will therefore take slightly
 longer with additional runs reusing the environment. If you change the
 dependencies you will likely need to run `make clean` to remove the environment
-to force an install of the new dependencies. Similarly if you run any of the tests from the
+to force an install of the new dependencies. Alternately, I like to run `git clean -fdx` 
+to remove all files not in git. Similarly if you run any of the tests from the
 built folder you'll want to remove the .tox folder before uploading to the
-charm store.
+charm store so the folder won't be included in every deploy of your charm.
 
 ### Unit Testing
 The unit tests are called via [tox][tox], it runs tests found in the folder
@@ -158,8 +159,8 @@ separate from the charm level requirements file. Unfortunately, charm-tools
 removes the root level requirements.txt file during charm building when it
 fetches the requirements and bundles them in the charm. If you want unit tests
 to run from the built charm folder, you'll need to include the base requirements
-in the unit specific requirements folder as well. I do want to be able to run unit tests
-on the built charm and make the unit file a super-set of the one in the
+in the unit specific requirements file as well. I do want to be able to run unit tests
+on the built charm so I always make the unit file a super-set of the one in the
 charm root.
 
 Not all parts of a charm are suitable for unit testing. Specifically the reactive
@@ -274,7 +275,8 @@ has a 'public_address' property that can be used to test web interfaces or API
 calls. While using libjuju is charm specific using the requests library to check
 web interfaces is not unique to charms or this template. As before you can
 review the charms in the [pirate-charmers github][pirate-charmers] for examples
-of ways we are testing functionally. Don't forget to include any python modules
+of ways we are testing functionally. As of this post, the most recent charm
+which tests actions is [taskd][taskd-github]. Don't forget to include any python modules
 you need in the functional test requirements.txt file to make them available in
 the virtual environment during testing.
 
@@ -303,6 +305,17 @@ but the test suite will continue to run. This means if the deploy is passing and
 you are writing test to exercise the units you do not need to remove and re-deploy 
 them for each iteration.
 
+## Closing
+This post just scratches the surface of best practices for charm writting and
+testing. After several years of charming, my understanding of those
+best practice continues to evolve. This is a good start, and hopefully
+helpful for anyone getting started that wants to start with what I have learned
+during my time charming. However charms, like cloud software, are quickly
+chaning and what I describe here is likely to continue to change. Please pay
+attention to the post date. While I have every intention of continuing to update
+the templates, I do not intend to update this post. It is a point in time guide
+for writting better charms.
+
 [part1]: https://chris-sanders.github.io/2019-01-28-charm-create/
 [pytest]: https://docs.pytest.org/en/latest/
 [fixture-docs]: https://docs.pytest.org/en/latest/fixture.html
@@ -316,3 +329,4 @@ them for each iteration.
 [asyncio]: https://docs.python.org/3/library/asyncio.html
 [pirate-charmers]: https://github.com/pirate-charmers
 [tox]: https://tox.readthedocs.io/en/latest/
+[taskd-github]: https://github.com/pirate-charmers/layer-taskd
