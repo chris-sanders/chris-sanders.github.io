@@ -231,7 +231,7 @@ domain.
 
 You can see the available config options on ddclient with:
 ```bash
-$ juju config ddclient/0
+$ juju config ddclient
   ddclient-address:
     default: ""
     description: Domain name to register this host to
@@ -343,7 +343,7 @@ love to hear how you're using the charms.
 With a fully operating bundle, you might want to minimize resources in use or
 save some of the customizations that have been applied via the cli. This can be
 done with an [overlay bundle][overlay-bundle]. An overlay bundle applies on top
-of another bundle to modify or customize it.
+of another bundle to modify it.
 
 As an example, let's use an overlay bundle to place a constraint on HAProxy to
 use an f1-micro instance size and include the previously created weechat.cfg
@@ -380,7 +380,7 @@ on the Always Free tier on Google Cloud. An f1-micro is fine for these
 applications, but the limited cpu will increase install time. I've also
 seen installs invoke the oom-killer with the limited ram on the f1-micro. You can 
 avoid this by downloading the bundle and commenting out applications, 
-un-commenting and installing them one at a time. You can download a charm or
+and installing them one or two at a time. You can download a charm or
 bundle with the `charm pull` command.
 
 ```bash
