@@ -9,25 +9,25 @@ date:   2019-02-09 20:00:00 +0000
 # image: "/img/design-blueprint.png"
 tags: [charms, pirate-charmers, bundle]
 ---
-This post will walk through deploying weechat as a persistent IRC client via a
-juju bundle. Bundles capture configurations for multiple charms and will make
-this setup very straight forward. By the end we'll have a persistent IRC bouncer
-that can run on the free tier of may cloud providers. In the process a VPN will also
-be setup which can be used to access weechat, but can also act as a general
-purpose VPN to route traffic for clients on untrusted networks.
+Juju bundles define configuration and relations of a group of software. In this
+post I'll review a bundle that deploys a secure IRC client and VPN. 
+Combining multiple charms in a bundle make this setup very straight forward. 
+By the end we'll have a persistent IRC bouncer that can run on the free tier 
+of many cloud providers. In the process a VPN will also be setup which can 
+be used to access weechat, but can also act as a general purpose VPN to route 
+traffic for clients on untrusted networks.
 
 ## Deploying
 As in previous posts, let's start by getting a deployment started so you can
 follow along and have a test environment ready later in the post. I do my test deploys on Google 
 Compute, but you can do this deploy on any cloud provider you have setup with juju. 
-You can read about [Using Google GCE with Juju][google-juju] and get started now 
-for free. The [JAAS (Juju As A Service)][jaas] beta is free and Google offers 
-[$300 credit for a year][google-credit] which is more than enough for a year of testing.
+You can read about [Using GCE with Juju][google-juju] and get started now 
+for free. 
 
-Once you have a control configured you can start the deploy with:
+Once you have a controller configured you can start the deploy with:
 
 ```bash
-juju deploy cs:~pirate-charmers/bundle/weechat
+juju deploy cs:~pirate-charmers/bundle/bundle-weechat
 ```
 
 The result once settled should look something like this.
@@ -59,7 +59,16 @@ haproxy:reverseproxy  weechat:reverseproxy  reverseproxy  regular
 
 ```
 ## What was deployed
-The bundle has deployed several applications.
+This bundle deploys four pieces of software.
+ * Weechat - An IRC client
+ * Haproxy - Provides reverseproxy for Weechat's relay function
+ * ddclient - Registers dynamic IP addresses with a domain name to allow
+   registering for TLS certificate with Let's Encrypt
+ * Wireguard - A fast UDP based VPN
+
+Wireguard and HAProxy are installed on a machine with access to a public IP.
+Weechat and ddclient are installed in containers and access is not directly
+available externally.
 
 ## VPN
 ### Client setup
@@ -72,7 +81,7 @@ sudo apt install wireguard
 ```
 
 Next we need to configure wireguard to connect to the server we have deployed.
-We will need a public and private key, and they can be generated with:
+This requires a public and private key, and they can be generated with:
 
 ```bash
 umask 077
@@ -82,10 +91,10 @@ This will generate two files 'privatekey' and 'publickey' you can `cat` the
 files to see your keys.
 
 We will also need some information from the server that we want to connect to,
-we can retrieve that with the following command once Wireguard is deployed.
+it can be retrieved with the `get-config` action once Wireguard is deployed.
 
 ```bash
-$ juju run-action wireguard/0 get-config --waitunit-wireguard-0:
+$ juju run-action wireguard/0 get-config --wait
   id: eccb1184-54c7-402e-833e-ff7ded453e6a
   results:
     ip: 35.190.168.222
@@ -156,6 +165,16 @@ interface: wg0
 peer: JCiYyUCYcqdPmw6TIhp6L1vC1exBnWV2Q=
   allowed ips: 10.10.10.2/32
 ```
+The bundle is configured to route traffic from the vpn to device 'ens4'. If you
+are deploying on another cloud, you might need to update this for the device
+that has your public address. The setting is `forward-dev` and can be set by
+passing a string with your device. If your device was eth0 the command would be:
+
+```bash
+# This is an example, not needed on GCE
+juju config wireguard forward-dev="eth0"
+```
+
 ### Connect to wireguard
 
 With the server and client configured you can now connect from
@@ -188,7 +207,7 @@ $ juju ssh weechat/0
 ubuntu@juju-b3efd1-0-lxd-0:~$ sudo su - weechat
 weechat@juju-b3efd1-0-lxd-0:~$ screen -R
 ```
-The weechat users is a normal user, you can add ssh credentials to this user to
+The weechat user is a normal user, you can add ssh credentials to this user to
 ssh directly to the account if you prefer. As normal you can disconnect from
 screen without closing weechat with Ctrl-A-D.
 
@@ -204,7 +223,7 @@ deployed with the bundle.
 For Letsencrypt to issue certificates you need a domain to register with, and
 you can set that up with ddclient. Ddclient supports a large number of providers
 for updating dynamic addresses. There is a good overview on
-[DynamicDNS][ubuntu-dynamic-dns] on help.ubuntu.com. I'm using [Google
+[DynamicDNS][ubuntu-dynamic-dns] on help.ubuntu. I'm using [Google
 Domains][google-domains], and the ddclient charm is set for that provider by
 default. When you create a Dynamic DNS entry in the 'Synthetic records' section
 of your domains account you'll be provided a username and password for that
@@ -272,10 +291,10 @@ $ juju debug-log
 ```
 
 ### Connect via Glowing-bear
-With HAProxy now running registered you can use Glowing-bear to connect to the
+With HAProxy now using TLS certificates you can use Glowing-bear to connect to the
 relay. You'll access your relay on the domain you registered on port 443 and log
 in with the relay password that weechat generated on install. Get the password
-with:
+with the action `get-relay-password`:
 
 ```bash
 $ juju run-action weechat/0 get-relay-password --wait
@@ -295,8 +314,9 @@ When connecting with [hosted glowingbear][glowing-bear] be sure to use https not
 http and check the 'Encryption' box before connecting. This will ensure your
 communication to your weechat instance is encrypted.
 
-If you've been following along you should be connected to weechat on freenode.
-You can continue to configure your usernames and other weechat settings. While
+## Configure Weechat
+You can configure your usernames and other weechat settings which are deatiled
+in the [WeeChat quick start guide][weechat-quick-start]. While
 you can do this directly in weechat, you can also revision your settings in a
 config file and apply them through the charm. This is particularly useful if you
 want to spin up temporary weechat clients.
@@ -311,17 +331,68 @@ per line. For example, you can create the following weechat.cfg file.
 /set irc.server.freenode.autojoin "##pirate-charmers"
 /connect freenode
 ```
-Applying the file would be done with:
+Applying the file by setting it as the `user-conifg` setting on the weechat charm:
 ```bash
 $ juju config weechat user-config="$(cat ./weechat.cfg)"
 ```
 The file will be applied and settings saved to persist across reboot. You should
-have been joined to the channel ##pirate-charmers we would love to hear how you're
-using the charms.
+have been joined to the channel ##pirate-charmers if you've made it this far we would 
+love to hear how you're using the charms.
 
+## Customizing the bundle and Minimizing resources
+With a fully operating bundle, you might want to minimize resources in use or
+save some of the customizations that have been applied via the cli. This can be
+done with an [overlay bundle][overlay-bundle]. An overlay bundle applies on top
+of another bundle to modify or customize it.
+
+As an example, let's use an overlay bundle to place a constraint on HAProxy to
+use an f1-micro instance size and include the previously created weechat.cfg
+during deploy time. Create the file `weechat-overlay.yaml` with the following:
+
+```yaml
+applications:
+  haproxy:
+    constraints: "instance-type=f1-micro"
+  weechat:
+    options:
+      user-config: include-file://weechat.cfg
+```
+
+With the overlay defined you could run the deploy with the original bundle and
+these two settings from the overlay as:
+
+```bash
+juju deploy cs:~pirate-charmers/bundle/bundle-weechat --overlay ./weechat-overlay.yaml
+```
+Using an overlay, you can pre-configure any of the config settings that were set
+after deploy. This makes it possible to tear down and re-create your instance
+very quickly with all user specific settings kept in an overlay. Just remember,
+DNS still takes time to propagate and Letsencrypt shouldn't be enabled during
+the deploy. You should check that your domain is available before enabling it.
+
+While this does make it easy to stand up a temporary IRC client and VPN, you
+should be aware that Letsencrypt has [rate limits][letsencrypt-limits].
+It is very easy to hit the limit of *5 duplicate certificates per week*
+redeploying this bundle.
+
+By installing the bundle on the 'f1-micro' instance type you can run this bundle
+on the Always Free tier on Google Cloud. An f1-micro is fine for these
+applications, but the limited cpu will increase install time. I've also
+seen installs invoke the oom-killer with the limited ram on the f1-micro. You can 
+avoid this by downloading the bundle and commenting out applications, 
+un-commenting and installing them one at a time. You can download a charm or
+bundle with the `charm pull` command.
+
+```bash
+charm pull cs:~pirate-charmers/bundle/bundle-weechat
+```
 
 [taskd-github]: https://github.com/pirate-charmers/layer-taskd
 [JAAS]: https://jujucharms.com/jaas
 [glowing-bear]: https://glowing-bear.org
 [ubuntu-dynamic-dns]: https://help.ubuntu.com/community/DynamicDNS
 [google-domains]: https://domains.google.com
+[google-juju]: https://docs.jujucharms.com/2.4/en/help-google
+[weechat-quick-start]: https://weechat.org/files/doc/stable/weechat_quickstart.en.html
+[overlay-bundle]: https://docs.jujucharms.com/2.5/en/charms-bundles#overlay-bundles
+[letsencrypt-limits]: https://letsencrypt.org/docs/rate-limits/
