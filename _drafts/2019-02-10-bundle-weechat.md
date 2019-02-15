@@ -70,6 +70,9 @@ Wireguard and HAProxy are installed on a machine with access to a public IP.
 Weechat and ddclient are installed in containers and access is not directly
 available externally.
 
+Weechat can be connected to via the Relay or using the VPN to SSH to the weechat
+container.
+
 ## VPN
 ### Client setup
 To connect to wireguard you'll need wireguard installed on your workstation.
@@ -91,7 +94,7 @@ This will generate two files 'privatekey' and 'publickey' you can `cat` the
 files to see your keys.
 
 We will also need some information from the server that we want to connect to,
-it can be retrieved with the `get-config` action once Wireguard is deployed.
+it can be retrieved with the `get-config` action after Wireguard is deployed.
 
 ```bash
 $ juju run-action wireguard/0 get-config --wait
@@ -152,7 +155,7 @@ Send the configuration to the server with:
 ```bash
 juju config wireguard peers="$(cat ./peers.yaml | base64)"
 ```
-You can verify the peer is now listed on the server by running the 'wg' command
+You can verify the peer is listed on the server by running the 'wg' command
 on the unit.
 
 ```bash
@@ -331,35 +334,31 @@ per line. For example, you can create the following weechat.cfg file.
 /set irc.server.freenode.autojoin "##pirate-charmers"
 /connect freenode
 ```
-Applying the file by setting it as the `user-conifg` setting on the weechat charm:
+Apply the file by setting it as the `user-conifg` setting on the weechat charm:
 ```bash
 $ juju config weechat user-config="$(cat ./weechat.cfg)"
 ```
-The file will be applied and settings saved to persist across reboot. You should
-have been joined to the channel ##pirate-charmers if you've made it this far we would 
-love to hear how you're using the charms.
+The file will be applied and settings saved to persist across reboot. If you made it this far
+you have been joined to the channel ##pirate-charmers. We would love to hear how you're using 
+the charms.
 
-## Customizing the bundle and Minimizing resources
-With a fully operating bundle, you might want to minimize resources in use or
-save some of the customizations that have been applied via the cli. This can be
-done with an [overlay bundle][overlay-bundle]. An overlay bundle applies on top
-of another bundle to modify it.
+## Customizing the bundle
+With a fully operating bundle, you might want save some of the customizations that 
+have been applied via the cli. This can be done with an [overlay bundle][overlay-bundle]. 
+An overlay bundle applies on top of another bundle to modify it.
 
-As an example, let's use an overlay bundle to place a constraint on HAProxy to
-use an f1-micro instance size and include the previously created weechat.cfg
+As an example, let's use an overlay bundle to include the previously created weechat.cfg
 during deploy time. Create the file `weechat-overlay.yaml` with the following:
 
 ```yaml
 applications:
-  haproxy:
-    constraints: "instance-type=f1-micro"
   weechat:
     options:
       user-config: include-file://weechat.cfg
 ```
 
 With the overlay defined you could run the deploy with the original bundle and
-these two settings from the overlay as:
+include the weechat.cfg:
 
 ```bash
 juju deploy cs:~pirate-charmers/bundle/bundle-weechat --overlay ./weechat-overlay.yaml
@@ -375,17 +374,28 @@ should be aware that Letsencrypt has [rate limits][letsencrypt-limits].
 It is very easy to hit the limit of *5 duplicate certificates per week*
 redeploying this bundle.
 
-By installing the bundle on the 'f1-micro' instance type you can run this bundle
-on the Always Free tier on Google Cloud. An f1-micro is fine for these
-applications, but the limited cpu will increase install time. I've also
-seen installs invoke the oom-killer with the limited ram on the f1-micro. You can 
-avoid this by downloading the bundle and commenting out applications, 
-and installing them one or two at a time. You can download a charm or
-bundle with the `charm pull` command.
+# Closing
+With this bundle you have both a persistent IRC bouncer and a UDP based VPN that
+can be used to secure mobile clients. The initial deploy performs best with the
+default instance size that juju selects but during normal operations
+substantially less resources are needed. You can, for example, edit the instance
+once it is working as expected to be an f1-mirco on GCE. This size qualifies for
+the 'Always Free' tier and as long as your network traffic doesn't exceed normal
+limits doesn't cost anything to leave running. This is a great way to stay on
+IRC persistently even across multiple clients.
 
-```bash
-charm pull cs:~pirate-charmers/bundle/bundle-weechat
-```
+Additionally Wireguard, the vpn deployed, is very efficient for clients that
+connect temporarily. This works very well for mobile clients that might
+occasionally be on an untrusted WiFi network. The UDP nature of Wireguard means
+that clients don't need to send a keep alive, only transmitting when a
+connection is needed. This saves both on data as well as battery since the device
+can sleep while on the VPN. Wireguard also handles roaming clients well.
+Wireguard servers will use the unique key for each client to update the last
+known IP address of the client, allowing clients to roam between
+connections to the server without issue.
+
+If you're interested in Wireguard and not IRC you can just deploy Wireguard and
+use the VPN section of this blog to configure peers.
 
 [taskd-github]: https://github.com/pirate-charmers/layer-taskd
 [JAAS]: https://jujucharms.com/jaas
