@@ -2,7 +2,7 @@
 layout: post
 title:  "Bundle Weechat"
 subtitle: "IRC made easy"
-date:   2019-02-09 20:00:00 +0000
+date:   2019-02-15 20:00:00 +0000
 gh-repo: pirate-charmers/bundle-weechat
 gh-badge: [star, fork, follow]
 share-img: "/img/pirate-charmers/weechat-logo.png"
