@@ -88,7 +88,7 @@ This requires a public and private key, and they can be generated with:
 
 ```bash
 umask 077
-wg genkey | tee pirvatekey | wg pubkey > publickey
+wg genkey | tee privatekey | wg pubkey > publickey
 ```
 This will generate two files 'privatekey' and 'publickey' you can `cat` the
 files to see your keys.
