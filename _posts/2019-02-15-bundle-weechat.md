@@ -111,7 +111,7 @@ $ juju run-action wireguard/0 get-config --wait
   unit: wireguard/0
 ```
 We now have all the information to write the config file for our client. Edit
-the file `/etc/wireguard/weechat.cfg` replacing the variables with the values
+the file `/etc/wireguard/weechat.conf` replacing the variables with the values
 from the above client keys and server config.
 
 ```yaml
