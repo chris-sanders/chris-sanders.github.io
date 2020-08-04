@@ -375,8 +375,8 @@ changing you'll find many features you want for CAAS charms documented on discou
 ## Helm
 [Helm][helm] shouldn't need an introduction. As shown above I'm building my templates on top
 of Helm Charts where available to expedite deployments. Helm is nice, but even with Helm 3 I
-prefer having the ability to provide an overlay step and I like storing my configuration on
-disk. Helm is nice, but it seems best as part of the solution not the only tool.
+prefer having the ability to provide perform post processing and I like storing my configuration on
+disk. Helm just seems best fit as part of the solution not the only tool.
 
 ## Ansible
 Ansible has a [k8s module][ansible-k8s] which lets you configure and deploy with Ansible.
