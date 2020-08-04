@@ -360,10 +360,11 @@ to implement complex logic, and easier to troubleshoot.
 I've been using juju for a number of years now for my bare metal and LXD based deployments.
 Brining the application modeling paradigm to K8s applications is something I'm very interested
 in. After trying with Juju I've found a few issues that make it unsuitable for my use today.
-Currently, juju doesn't allow charms to model [ingress objects or cluster resources][juju-ingress]. Additionally,
-while testing CAAS charms I triggered several issues with Juju and K8s becoming out of sync.
-get better with each release, but with the 2.7.x (2.7.5 I think) release that I did my testing
-for this comparison with it wasn't stable enough at that time for me to select it.
+Currently, juju doesn't allow charms to model [ingress objects or cluster
+resources][juju-ingress]. Additionally, while testing CAAS charms I triggered several issues
+with Juju and K8s becoming out of sync.  This gets better with each release, but with the
+2.7.x (2.7.5 I think) release that I did my testing for this comparison with it wasn't stable
+enough at that time for me to select it.
 
 I'll revisit Juju and application modeling again in the future. If you're interested in trying
 it out, check out the [juju discourse][juju-discourse] where you'll find the latest
