@@ -128,7 +128,7 @@ that with.
 ```bash
 kubectl get pods -n argocd -l app.kubernetes.io/name=argocd-server -o name | cut -d'/' -f 2
 ```
-Open a browser and navigate to 127.0.0.1:8000 and you should see the Argo log in screen.
+Open a browser and navigate to 127.0.0.1:8080 and you should see the Argo log in screen.
 
 ![argo login](/img/kubernetes/argocd.png){:.img-shadow .img-rounded}
 
