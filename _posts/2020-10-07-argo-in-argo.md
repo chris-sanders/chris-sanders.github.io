@@ -117,7 +117,6 @@ If everything looks good in another terminal start a kube-proxy so you can acces
 This won't be necessary after you have Ingress on the cluster.
 ```bash
 kubectl port-forward svc/argocd-server -n argocd 8080:443
-argocd-server-5465fbf444-gnk6q
 ```
 This isn't strictly necessary with microk8s if it's installed locally because you can access
 the ClusterIP directly. At some point you'll likely want to do this on a remote cluster so
@@ -127,6 +126,7 @@ The default password for the admin account is the name of the server pod. You ca
 that with.
 ```bash
 kubectl get pods -n argocd -l app.kubernetes.io/name=argocd-server -o name | cut -d'/' -f 2
+argocd-server-5465fbf444-gnk6q
 ```
 Open a browser and navigate to 127.0.0.1:8080 and you should see the Argo log in screen.
 
