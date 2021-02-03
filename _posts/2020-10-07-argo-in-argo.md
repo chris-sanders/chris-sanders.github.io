@@ -137,12 +137,12 @@ Login with admin and the pod name from the command above.
 ## Managing Argo with Argo
 Currently there aren't any applications that Argo knows about, so let's tell it about itself.
 
-There is one folder in the argocd folder that isn't part of a Helm Chart. The `apps` folder,
-has an Application which is an Custom Resource that defines what applications Argo should be
+There is one folder in the argocd folder that isn't part of a Helm Chart, the `apps` folder.
+This folder has an Application which is an Custom Resource that defines what applications Argo should be
 managing. Some of the key things that an Application define include:
  * The name and namespaces for the application
- * The target gitRevision to sync to
- * valuesFiles for this version of the application
+ * The target `gitRevision` to sync to
+ * `valuesFiles` for this version of the application
  * The repository URL to sync to
 
 You don't need to modify this file, but in the future be careful about the namespace. The
@@ -155,7 +155,7 @@ kubectl apply -f ./apps/argocd-lab.yaml
 ```
 If you have the Argo web UI open you'll see a new application added, and after a short sync
 period it will go green. Click on the application to see all of the components. The sync
-should be relatively fast, nothing has changed since we just deployed it Argo will  verify
+should be relatively fast, nothing has changed since we just deployed it. Argo will verify
 they match and not change anything.
 
 ![argo login](/img/kubernetes/argo-in-argo.png){:.img-shadow .img-rounded}
@@ -163,7 +163,7 @@ they match and not change anything.
 # Wrapping up
 That's all there is to it Argo is ready to handle the rest of the applications. You can check
 out some of the other folders in the sample repository to see other apps I've installed in a
-lab environment while testing. No need to use helm anymore, just install the app from the apps
+lab environment while testing. No need to use helm anymore, just kubectl apply the app from the apps
 folder, and argo will do the rest.
 
 To get started, I typically install:
@@ -171,7 +171,7 @@ To get started, I typically install:
  * [Sealed-Secrets][sealed-secrets] - A one way secret encryption, some of the applications require Secrets and
    this is how I'm managing them, in git. 
  * [Traefik][traefik] - An ingress controller, an Argo specific IngressRoute is included in the argocd
-   templates. Once Traefik is installed, you can enable it and stops using the kube-proxy to access
+   templates. Once Traefik is installed, you can enable the route and stop using the kube-proxy to access
    Argo.
 
 Once you go beyond a simple test cluster, there are also Charts to handle TLS:
