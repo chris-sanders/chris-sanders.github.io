@@ -2,7 +2,7 @@
 layout: post
 title:  "K8s metal ingress with TLS"
 subtitle: ""
-#date:   2020-09-10 23:30:00 +0000
+date:   2020-09-10 23:30:00 +0000
 gh-repo: chris-sanders/ansible_k14_deployment
 gh-badge: [star, fork, follow]
 share-img: "/img/kubernetes/kubernetes.png"
