@@ -10,7 +10,7 @@ image: "/img/board-cubes.png"
 tags: [charms, pirate-charmers, charm-template]
 ---
 Charms are very flexible and can be written several ways and even in different
-languages. Having an opinionated template limits those options but gets you
+languages. Having good template limits those options but gets you
 started faster. This post will cover a template we'll be using for the
 pirate-charmers charms that get you started with unit and functional testing out
 of the box. By the end of this post you'll be able to quickly create a template

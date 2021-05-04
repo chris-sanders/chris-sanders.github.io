@@ -16,7 +16,7 @@ interest and maybe even learn something along the way.
 
 I'm a big fan of software that will just *do the right thing*&trade; and I'm
 sure the blog posts will reflect that. Even when covering complex topics I try
-to provide an out of box example that is opinionated to get you started quickly.
+to provide an out of box example that will get you started quickly.
 
 ## About me
 
