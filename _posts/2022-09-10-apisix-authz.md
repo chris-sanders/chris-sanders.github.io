@@ -2,7 +2,7 @@
 layout: post
 title:  "Authz with Keycloak"
 subtitle: "Hard to find open source features"
-date:   2022-09-01 23:30:00 +0000
+date:   2022-09-010 23:30:00 +0000
 share-img: "/img/auth/apisix.jpg"
 image: "/img/auth/apisix.jpg"
 tags: [k8s, homelab, auth]
