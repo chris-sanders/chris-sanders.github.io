@@ -120,7 +120,7 @@ At this point I can use normal `kubectl` commands to look at the cluster and my 
 
 ## Summary
 
-While the above example is specific to Github there's nothing about the use of troubleshoot that's specific to this environment. With a simple download, execute, and some way to retain the output Troubleshoot and sbctl together provide a way to capture what your cluster looked like at a specific point in time during CI. With 13 lines of yaml all I now have a really fast way to introspect a failed CI capture at the time of the failure.
+While the above example is specific to Github there's nothing about the use of troubleshoot that's specific to this environment. With a simple download, execute, and some way to retain the output Troubleshoot and sbctl together provide a way to capture what your cluster looked like at a specific point in time during CI. With 13 lines of yaml I now have a fast way to introspect a failed CI by investigating a point in time snapshot of the exact failure environment.
 
 [Troubleshoot]: https://troubleshoot.sh
 [sbctl]: https://github.com/replicatedhq/sbctl
