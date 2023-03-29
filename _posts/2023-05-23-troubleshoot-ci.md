@@ -108,7 +108,11 @@ The artifact is listed at the bottom of the run summary shown here:
 
 ## Sbctl
 
-Once the support bundle is downloaded, you can unzip it to retrieve the `ci-bundle.tar.gz` support bundle file. While you can untar this file and browse through it's contents that's not very convenient. Instead we'll use `sbctl` to use kubectl to review the cluster. Using the `shell` command tells sbctl to launch a subshell and set the `KUBECONFIG` in that shell for me, the `serve` command starts sbctl emulating an apiserver, and the `-s` flag specifies a support bundle to operate on. Putting all of those together the command is `sbctl shell serve -s ./ci-bundle.tar.gz`. After which a you will have a shell you can execute kubectl against, here's an example:
+Once the support bundle is downloaded, you can unzip it to retrieve the `ci-bundle.tar.gz` support bundle file. While you can untar this file and browse through it's contents that's not very convenient. Instead we'll use `sbctl` to use kubectl to review the cluster. Using the `shell` command tells sbctl to launch a subshell and set the `KUBECONFIG` in that shell for me, the `serve` command starts sbctl emulating an apiserver, and the `-s` flag specifies a support bundle to operate on. Putting all of those together the command is: 
+
+`sbctl shell serve -s ./ci-bundle.tar.gz` 
+
+After which a you will have a shell you can execute kubectl against, here's an example:
 
 [![terminal](/img/troubleshoot/terminal.png){:.img-shadow .img-rounded}](/img/auth/authz_resources.png)
 
