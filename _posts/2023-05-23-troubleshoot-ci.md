@@ -112,7 +112,7 @@ Once the support bundle is downloaded, you can unzip it to retrieve the `ci-bund
 
 `sbctl shell serve -s ./ci-bundle.tar.gz` 
 
-After which a you will have a shell you can execute kubectl against, here's an example:
+After which a you will have a shell you can execute kubectl against. Here's an example, note the export statemnt was done by sbctl only the sbctl command and `k get no` commands were actually typed in the terminal by the user.
 
 [![terminal](/img/troubleshoot/terminal.png){:.img-shadow .img-rounded}](/img/auth/authz_resources.png)
 
