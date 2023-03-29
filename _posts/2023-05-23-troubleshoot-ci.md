@@ -124,4 +124,5 @@ While the above example is specific to Github there's nothing about the use of t
 
 [Troubleshoot]: https://troubleshoot.sh
 [sbctl]: https://github.com/replicatedhq/sbctl
-[Replciated]: https://replicated.com
+[Replicated]: https://replicated.com
+
