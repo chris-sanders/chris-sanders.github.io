@@ -14,7 +14,7 @@ Debugging failures in a CI pipeline can often be more difficult than we would li
 
 The [Troubleshoot][] project is an open source project to provide diagnostic tools for working with Kubernetes. For this article I'm not going to focus on the analysis features but on the collection of logs and cluster information. In particular if configured correctly the support bundle that is captured from a Troubleshoot run can be used with another project [sbctl][] to review the cluster with kubectl as if you had direct access to the cluster.
 
-The `sbctl` tool emulates the API server and returns value from the support bundle captured by Troubleshoot. You can list pods, events, and even review logs allowing you to review what a clsuter looked like at a point in time. Combining these make for a really compelling way to capture what has gone wrong in CI systems long after the test is done and cluster has been destroyed.
+The `sbctl` tool emulates the API server and returns value from the support bundle captured by Troubleshoot. You can list pods, events, and even review logs allowing you to review what a cluster looked like at a point in time. Combining these make for a really compelling way to capture what has gone wrong in CI systems long after the test is done and cluster has been destroyed.
 
 ## Github Action
 
@@ -98,9 +98,9 @@ jobs:
 
 Most of this workflow is using actions available as open source actions shared on Github. It checks out the code, adds dependencies (Helm and chart-testing), lints the chart, and then deploys it. These steps aren't relevant to the troubleshoot portion but are included to have a full example.
 
-The last 3 sections are the ones of interest here and could be added to any CI system in a similar fashion. The step `install troubleshoot` just uses a curl command to download the latest release of the troubleshoot binary. The step `collect bundle` runs troubleshoot to generate a bundle, the information that is collected in the bundle are provided here via a URL although there are other methods to retrieve them. The nice thing about point to an online spec as is done here, is you can continue to update and modify the information collected and your CI is always collecting relevant data. The two shown here are ones the Reliability Engineering team at [Replicated][] maintain for our use. This is the team that is developing Troubleshoot and you can use this as well to get started if you like. The final step `Upload support bundle artifact` is Github specific and allows you to upload artifacts to retain after the run has completed.
+The last 3 sections are the ones of interest here and could be added to any CI system in a similar fashion. The step `install troubleshoot` just uses a curl command to download the latest release of the troubleshoot binary. The step `collect bundle` runs troubleshoot to generate a bundle, the information that is collected in the bundle are provided here via a URL although there are other methods to retrieve them. The nice thing about using an online spec, as is done here, is you can continue to update and modify the information collected and your CI is always collecting relevant data. The two shown here are ones the Reliability Engineering team at [Replicated][] maintain for our use. This is the team that is developing Troubleshoot and you can use this as well to get started if you like. The final step `Upload support bundle artifact` is Github specific and allows you to upload artifacts to retain after the run has completed.
 
-With these three steps, a Github run pass or fail uploads an artifact that you can review after the fact. Note the line `if: success() || failure()` which runs these actions pass or fail but not if the run is canceled all together.
+With these three steps, pass or fail, an artifact is created that you can review after the fact. Note the line `if: success() || failure()` which runs these actions pass or fail but not if the run is canceled all together. By default artifacts are stored for 90 days.
 
 The artifact is listed at the bottom of the run summary shown here:
 
@@ -108,11 +108,11 @@ The artifact is listed at the bottom of the run summary shown here:
 
 ## Sbctl
 
-Once the support bundle is downloaded, you can unzip it to retrieve the `ci-bundle.tar.gz` support bundle file. While you can untar this file and browse through it's contents that's not very convenient. Instead we'll use `sbctl` to use kubectl to review the cluster. Using the `shell` command tells sbctl to launch a subshell and set the `KUBECONFIG` in that shell for me, the `serve` command starts sbctl emulating an apiserver, and the `-s` flag specifies a support bundle to operate on. Putting all of those together the command is: 
+Once the support bundle is downloaded, you can unzip it to retrieve the `ci-bundle.tar.gz` support bundle file. While you can untar this file and browse through it's contents that's not very convenient. Instead we'll use `sbctl` to use kubectl to review the cluster. Using the `shell` command tells sbctl to launch a sub-shell and set the `KUBECONFIG` in that shell for me, the `serve` command starts sbctl emulating an api-server, and the `-s` flag specifies a support bundle to operate on. Putting all of those together the command is:
 
 `sbctl shell serve -s ./ci-bundle.tar.gz` 
 
-After which a you will have a shell you can execute kubectl against. Here's an example, note the export statemnt was done by sbctl only the sbctl command and `k get no` commands were actually typed in the terminal by the user.
+After which a you will have a shell you can execute kubectl against. Here's an example, note the export statement was done by sbctl only the sbctl command and `k get no` commands were actually typed in the terminal by the user.
 
 [![terminal](/img/troubleshoot/terminal.png){:.img-shadow .img-rounded}](/img/auth/authz_resources.png)
 
@@ -120,7 +120,7 @@ At this point I can use normal `kubectl` commands to look at the cluster and my 
 
 ## Summary
 
-While the above example is specific to Github there's nothing about the use of troubleshoot that's specific to this environment. With a simple download, execute, and some way to retain the output Troubleshoot and sbctl together provide a way to capture what your cluster looked like at a specific point in time during CI. With 13 lines of yaml I now have a fast way to introspect a failed CI by investigating a point in time snapshot of the exact failure environment.
+While the above example is specific to Github there's nothing about the use of troubleshoot that's specific to this environment. Troubleshoot and sbctl together provide a way to capture what your cluster looked like during CI runs. With 13 lines of yaml I now have a fast way to introspect a failed CI by investigating a point in time snapshot of the exact failure environment.
 
 [Troubleshoot]: https://troubleshoot.sh
 [sbctl]: https://github.com/replicatedhq/sbctl
