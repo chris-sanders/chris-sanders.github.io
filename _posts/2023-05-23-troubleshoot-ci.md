@@ -116,7 +116,7 @@ After which a you will have a shell you can execute kubectl against. Here's an e
 
 [![terminal](/img/troubleshoot/terminal.png){:.img-shadow .img-rounded}](/img/auth/authz_resources.png)
 
-At this point I can use normal `kubectl` commands to look at the cluster and my deployment to figure out what happened. There is even host level information inside the `ci-bundle.tar.gz` file if I run into issues with the host like running out of storage. Even though this runner has been destroyed some time ago I'm a file download and sbctl command away from browsing what it looked like no need to try and stand up my own reproduction environment.
+At this point I can use normal `kubectl` commands to look at the cluster and my deployment to figure out what happened. There is even host level information inside the `ci-bundle.tar.gz` file. Even though this runner has been destroyed some time ago I'm a file download and sbctl command away from browsing what it looked like.
 
 ## Summary
 
