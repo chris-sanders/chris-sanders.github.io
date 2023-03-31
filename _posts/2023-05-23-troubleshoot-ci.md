@@ -104,7 +104,7 @@ With these three steps, pass or fail, an artifact is created that you can review
 
 The artifact is listed at the bottom of the run summary shown here:
 
-[![screenshot](/img/troubleshoot/screenshot.png){:.img-shadow .img-rounded}](/img/auth/authz_resources.png)
+[![screenshot](/img/troubleshoot/screenshot.png){:.img-shadow .img-rounded}](/img/troubleshoot/screenshot.png)
 
 ## Sbctl
 
@@ -114,7 +114,7 @@ Once the support bundle is downloaded, you can unzip it to retrieve the `ci-bund
 
 After which a you will have a shell you can execute kubectl against. Here's an example, note the export statement was done by sbctl only the sbctl command and `k get no` commands were actually typed in the terminal by the user.
 
-[![terminal](/img/troubleshoot/terminal.png){:.img-shadow .img-rounded}](/img/auth/authz_resources.png)
+[![terminal](/img/troubleshoot/terminal.png){:.img-shadow .img-rounded}](/img/troubleshoot/terminal.png)
 
 At this point I can use normal `kubectl` commands to look at the cluster and my deployment to figure out what happened. There is even host level information inside the `ci-bundle.tar.gz` file. Even though this runner has been destroyed some time ago I'm a file download and sbctl command away from browsing what it looked like.
 
